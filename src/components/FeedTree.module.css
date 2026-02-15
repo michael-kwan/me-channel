@@ -1,0 +1,74 @@
+.tree {
+  padding: 8px 0;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.empty {
+  padding: 24px 16px;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+.node {
+  user-select: none;
+}
+
+.children {
+  /* no extra indent here — handled by inline paddingLeft */
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #d0d0d0;
+  border-radius: 4px;
+  margin: 1px 4px;
+}
+
+.row:hover {
+  background: #2a2a4a;
+}
+
+.playable {
+  cursor: pointer;
+}
+
+.arrow {
+  font-size: 10px;
+  width: 14px;
+  flex-shrink: 0;
+  color: #888;
+  text-align: center;
+}
+
+.arrowSpacer {
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.icon {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.selected {
+  background: #6c63ff33;
+  color: #fff;
+}
+
+.selected:hover {
+  background: #6c63ff44;
+}

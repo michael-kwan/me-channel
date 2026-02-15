@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #3a3a5a;
+  border-radius: 6px;
+  background: #16213e;
+  color: #e0e0e0;
+  font-size: 14px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #6c63ff;
+}
+
+.input::placeholder {
+  color: #666;
+}
+
+.button {
+  padding: 8px 20px;
+  background: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.button:hover:not(:disabled) {
+  background: #5a52d5;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
