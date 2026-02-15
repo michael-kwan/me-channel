@@ -29,18 +29,16 @@ function saveFeeds(channels: FeedChannel[]) {
   }
 }
 
+function isAuthed(): boolean {
+  return !AUTH_HASH || sessionStorage.getItem("mc-auth") === "1";
+}
+
 export default function App() {
-  const [authed, setAuthed] = useState(
-    !AUTH_HASH || sessionStorage.getItem("mc-auth") === "1"
-  );
+  const [authed, setAuthed] = useState(isAuthed);
   const [channels, setChannels] = useState<FeedChannel[]>(loadSavedFeeds);
   const [selectedNode, setSelectedNode] = useState<TreeNode | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (!authed) {
-    return <LoginScreen onLogin={() => setAuthed(true)} />;
-  }
 
   // Persist channels to localStorage whenever they change
   useEffect(() => {
@@ -67,6 +65,10 @@ export default function App() {
   const handleChannelsChange = useCallback((updated: FeedChannel[]) => {
     setChannels(updated);
   }, []);
+
+  if (!authed) {
+    return <LoginScreen onLogin={() => setAuthed(true)} />;
+  }
 
   return (
     <div className={styles.app}>

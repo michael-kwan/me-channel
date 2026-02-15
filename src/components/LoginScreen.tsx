@@ -19,12 +19,6 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
   const [error, setError] = useState(false);
   const [checking, setChecking] = useState(false);
 
-  // If no auth hash is configured, skip login entirely
-  if (!AUTH_HASH) {
-    onLogin();
-    return null;
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setChecking(true);
