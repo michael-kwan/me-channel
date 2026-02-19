@@ -22,22 +22,36 @@ let nodeIdCounter = 0;
 
 const isDev = import.meta.env.DEV;
 
-function buildProxyUrl(feedUrl: string): string {
+const PROD_PROXIES: Array<(url: string) => string> = [
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+];
+
+async function fetchRaw(feedUrl: string): Promise<string> {
   if (isDev) {
-    // Use Vite dev server middleware
-    return `/api/feed?url=${encodeURIComponent(feedUrl)}`;
+    const proxyUrl = `/api/feed?url=${encodeURIComponent(feedUrl)}`;
+    const response = await fetch(proxyUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch feed: ${response.statusText}`);
+    }
+    return response.text();
   }
-  // Production: use public CORS proxy
-  return `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`;
+
+  let lastError: Error = new Error("All CORS proxies failed");
+  for (const makeProxy of PROD_PROXIES) {
+    try {
+      const res = await fetch(makeProxy(feedUrl));
+      if (res.ok) return res.text();
+      lastError = new Error(`Proxy returned HTTP ${res.status}`);
+    } catch (e) {
+      lastError = e instanceof Error ? e : new Error(String(e));
+    }
+  }
+  throw lastError;
 }
 
 export async function fetchFeed(feedUrl: string): Promise<{ title: string; nodes: TreeNode[] }> {
-  const proxyUrl = buildProxyUrl(feedUrl);
-  const response = await fetch(proxyUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch feed: ${response.statusText}`);
-  }
-  const xmlText = await response.text();
+  const xmlText = await fetchRaw(feedUrl);
   if (!xmlText.trim()) {
     throw new Error("Empty response from feed");
   }
