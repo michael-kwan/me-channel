@@ -22,6 +22,10 @@ let nodeIdCounter = 0;
 
 const isDev = import.meta.env.DEV;
 
+function toHttps(url: string): string {
+  return url.startsWith("http://") ? "https://" + url.slice(7) : url;
+}
+
 const PROD_PROXIES: Array<(url: string) => string> = [
   (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -103,13 +107,13 @@ export function parseFeedXml(xmlText: string): { title: string; nodes: TreeNode[
       ...(isSubFeed && playable
         ? {
             // Playable rss+xml items: the URL without xml=1 is an embeddable video page
-            videoUrl: enclosureUrl
+            videoUrl: toHttps(enclosureUrl
               .replace(/([?&])xml=1(&?)/, (_, p, a) => a ? p : "")
-              .replace(/([?&])title=[^&]*(&?)/, (_, p, a) => a ? p : ""),
+              .replace(/([?&])title=[^&]*(&?)/, (_, p, a) => a ? p : "")),
           }
         : {}),
       ...(!isSubFeed && enclosureUrl
-        ? { videoUrl: enclosureUrl }
+        ? { videoUrl: toHttps(enclosureUrl) }
         : {}),
     };
 
