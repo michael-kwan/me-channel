@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import type { MouseEvent } from "react";
 import type { FeedChannel, TreeNode } from "../types";
 import { loadChildren } from "../utils/rssParser";
 import styles from "./FeedTree.module.css";
@@ -6,6 +7,7 @@ import styles from "./FeedTree.module.css";
 interface FeedTreeProps {
   channels: FeedChannel[];
   onChannelsChange: (channels: FeedChannel[]) => void;
+  onRefreshChannel: (channelIdx: number) => Promise<void>;
   selectedNode: TreeNode | null;
   onSelectNode: (node: TreeNode) => void;
 }
@@ -13,6 +15,7 @@ interface FeedTreeProps {
 export default function FeedTree({
   channels,
   onChannelsChange,
+  onRefreshChannel,
   selectedNode,
   onSelectNode,
 }: FeedTreeProps) {
@@ -75,6 +78,7 @@ export default function FeedTree({
           selectedNode={selectedNode}
           onToggle={toggleExpand}
           onSelect={onSelectNode}
+          onRefresh={onRefreshChannel}
         />
       ))}
     </div>
@@ -88,6 +92,7 @@ function ChannelNode({
   selectedNode,
   onToggle,
   onSelect,
+  onRefresh,
 }: {
   channel: FeedChannel;
   channelIdx: number;
@@ -95,8 +100,20 @@ function ChannelNode({
   selectedNode: TreeNode | null;
   onToggle: (node: TreeNode, channelIdx: number) => void;
   onSelect: (node: TreeNode) => void;
+  onRefresh: (channelIdx: number) => Promise<void>;
 }) {
   const [expanded, setExpanded] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async (e: MouseEvent) => {
+    e.stopPropagation();
+    setRefreshing(true);
+    try {
+      await onRefresh(channelIdx);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   return (
     <div className={styles.node}>
@@ -104,6 +121,14 @@ function ChannelNode({
         <span className={styles.arrow}>{expanded ? "▼" : "▶"}</span>
         <span className={styles.icon}>📡</span>
         <span className={styles.label}>{channel.title}</span>
+        <button
+          className={styles.refreshBtn}
+          onClick={handleRefresh}
+          disabled={refreshing}
+          title="Clear cache and refresh feed"
+        >
+          {refreshing ? "⏳" : "↺"}
+        </button>
       </div>
       {expanded && (
         <div className={styles.children}>

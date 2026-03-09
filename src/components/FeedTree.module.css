@@ -72,3 +72,29 @@
 .selected:hover {
   background: #6c63ff44;
 }
+
+.refreshBtn {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.row:hover .refreshBtn {
+  opacity: 1;
+}
+
+.refreshBtn:hover {
+  color: #d0d0d0;
+}
+
+.refreshBtn:disabled {
+  cursor: default;
+  opacity: 1;
+}
