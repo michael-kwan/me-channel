@@ -66,6 +66,17 @@ export default function App() {
     setChannels(updated);
   }, []);
 
+  const handleRefreshChannel = useCallback(async (channelIdx: number) => {
+    const channel = channels[channelIdx];
+    if (!channel) return;
+    const refreshed = await fetchAndParseRoot(channel.feedUrl);
+    setChannels((prev) => {
+      const next = [...prev];
+      next[channelIdx] = refreshed;
+      return next;
+    });
+  }, [channels]);
+
   if (!authed) {
     return <LoginScreen onLogin={() => setAuthed(true)} />;
   }
@@ -86,6 +97,7 @@ export default function App() {
           <FeedTree
             channels={channels}
             onChannelsChange={handleChannelsChange}
+            onRefreshChannel={handleRefreshChannel}
             selectedNode={selectedNode}
             onSelectNode={setSelectedNode}
           />
